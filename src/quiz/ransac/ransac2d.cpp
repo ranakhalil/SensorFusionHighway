@@ -4,6 +4,9 @@
 #include "../../render/render.h"
 #include <chrono>
 #include <unordered_set>
+#include "../../processPointClouds.h"
+// using templates for processPointClouds so also include .cpp to help linker
+#include "../../processPointClouds.cpp"
 
 pcl::PointCloud<pcl::PointXYZ>::Ptr CreateData()
 {
@@ -41,6 +44,13 @@ pcl::PointCloud<pcl::PointXYZ>::Ptr CreateData()
   	return cloud;
 
 }
+
+pcl::PointCloud<pcl::PointXYZ>::Ptr CreateData3D()
+{
+	ProcessPointClouds<pcl::PointXYZ> pointProcessor;
+	return pointProcessor.loadPcd("../../../sensors/data/pcd/simpleHighway.pcd");
+}
+
 
 pcl::visualization::PCLVisualizer::Ptr initScene()
 {
@@ -87,6 +97,7 @@ int main ()
 
 	// Create data
 	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud = CreateData();
+	
 
 	// TODO: Change the max iteration and distance tolerance arguments for Ransac function
 	std::unordered_set<int> inliers = Ransac(cloud, 0, 0);
