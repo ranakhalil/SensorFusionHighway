@@ -9,12 +9,41 @@ void renderHighway(pcl::visualization::PCLVisualizer::Ptr& viewer)
 
 	// units in meters
 	double roadLength = 50.0;
-	double roadWidth = 12.0;
+	double roadWidth = 8.0;
 	double roadHeight = 0.2;
 
-	viewer->addCube(-roadLength/2, roadLength/2, -roadWidth/2, roadWidth/2, -roadHeight, 0, .2, .2, .2, "highwayPavement"); 
-	viewer->addLine(pcl::PointXYZ(-roadLength/2,-roadWidth/6, 0.01),pcl::PointXYZ(roadLength/2, -roadWidth/6, 0.01),1,1,0,"line1");
-	viewer->addLine(pcl::PointXYZ(-roadLength/2, roadWidth/6, 0.01),pcl::PointXYZ(roadLength/2, roadWidth/6, 0.01),1,1,0,"line2");
+	viewer->addCube(-roadLength/2, roadLength/2, -roadWidth/2, roadWidth/2, -roadHeight, 0, 1, 0, 0, "highwayPavement");
+    viewer->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_REPRESENTATION, pcl::visualization::PCL_VISUALIZER_REPRESENTATION_SURFACE, "highwayPavement"); 
+    viewer->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_COLOR, 1, 0, 0, "highwayPavement");
+    viewer->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_OPACITY, 1.0, "highwayPavement"); 
+    
+    pcl::PointCloud<pcl::PointXYZ>::Ptr curve (new pcl::PointCloud<pcl::PointXYZ>);
+    double curve_inner_radius = 4.0;
+    double curve_outer_radius = roadWidth+curve_inner_radius;
+
+    double curve_x = roadLength/2;
+    double curve_y = -roadWidth/2-curve_inner_radius;
+    
+    for(float theta = M_PI/2; theta <= M_PI; theta+=(M_PI/2/3))
+    {
+    	float x = curve_x-curve_inner_radius*cos(theta);
+    	float y = curve_y+curve_inner_radius*sin(theta);
+    	curve->points.push_back(pcl::PointXYZ(x,y,0));
+    }
+    for(float theta = M_PI; theta >= M_PI/2; theta-=(M_PI/2)/3)
+    {
+    	float x = curve_x-curve_outer_radius*cos(theta);
+    	float y = curve_y+curve_outer_radius*sin(theta);
+    	curve->points.push_back(pcl::PointXYZ(x,y,0));
+    }
+
+    viewer->addPolygon<pcl::PointXYZ>(curve,1.0,0.0,0.0,"curve");
+    viewer->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_REPRESENTATION, pcl::visualization::PCL_VISUALIZER_REPRESENTATION_SURFACE, "curve"); 
+    viewer->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_COLOR, 1, 0, 0, "curve");
+	
+
+	//viewer->addLine(pcl::PointXYZ(-roadLength/2,-roadWidth/6, 0.01),pcl::PointXYZ(roadLength/2, -roadWidth/6, 0.01),0,1,0,"line1");
+	//viewer->addLine(pcl::PointXYZ(-roadLength/2, roadWidth/6, 0.01),pcl::PointXYZ(roadLength/2, roadWidth/6, 0.01),0,1,0,"line2");
 }
 
 int countRays = 0;
